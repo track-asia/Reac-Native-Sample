@@ -113,9 +113,31 @@ yarn run android
 npm run android
 ```
 
-Error 
+<p align="center">
+  <a href="">
+    <img src="../readme_assets/xcode-package-1.png" width="400"/>
+  </a>
 
-ERROR: CHECKSUME 
+  <a href="">
+    <img src="../readme_assets/xcode-package-2.png" width="400"/>
+  </a>
+
+  <a href="">
+    <img src="../readme_assets/xcode-package-3.png" width="400"/>
+  </a>
+
+  <a href="">
+    <img src="../readme_assets/xcode-package-4.png" width="400"/>
+  </a>
+  </p>
+
+* Update Cocoapods
+```shell 
+sudo gem install cocoapods
+pod repo update
+```
+
+* ERROR: CHECKSUME 
 checksum of downloaded artifact of binary target 'TrackAsia' (b9be74f08b3b7f0350df1fce9f7436e0508ff970b9b70e266a77ba6e500b9f85) does not match checksum specified by the manifest (2b1efa7bce30cdcec3199d1267dab1c03d72ff992a629f9c32b4152cbad06a1b)
 
 ```shell 
@@ -127,29 +149,7 @@ rm -rf Pods
 ERROR: TrackAsia not found
 ios -> open file -> TrackAsiaSample.xcworkspace
 ERROR: frameworks.sh ARCHS[@]: unbound variable
-ios -> TrackAsiaSample.xcodeproj -> project.pbxproj -> find: EXCLUDED_ARCHS = arm64; 
-
-<a href="">
-  <img src="readme_assets/xcode-package-1.png" width="400"/>
-</a>
-
-<a href="">
-  <img src="readme_assets/xcode-package-2.png" width="400"/>
-</a>
-
-<a href="">
-  <img src="readme_assets/xcode-package-3.png" width="400"/>
-</a>
-
-<a href="">
-  <img src="readme_assets/xcode-package-4.png" width="400"/>
-</a>
-
-*Update Cocoapods
-```shell 
-sudo gem install cocoapods
-pod repo update
-```
+ios -> TrackAsiaSample.xcodeproj -> project.pbxproj -> find -> remove -> EXCLUDED_ARCHS = arm64; 
 
 
 
