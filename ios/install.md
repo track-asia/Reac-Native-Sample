@@ -12,7 +12,7 @@ Add the following to your `ios/Podfile`:
   end
 ```
 
-Running `pod install` will add version `1.0.1` of the TrackAsia SDK.
+Running `pod install` will add version `1.0.5` of the TrackAsia SDK.
 
 ```sh
 # Go to the ios directory
@@ -33,7 +33,7 @@ until this is fixed upstream. iOS devs can open the workspace in Xcode and run f
 
 ## Installing a specific version
 
-The current default TrackAsia version is `6.4.0`.
+The current default TrackAsia version is `1.0.5`.
 If you want to install a different version, you can override as follows in
 your `Podfile`:
 
@@ -42,7 +42,7 @@ $RCTMLN_Use_SPM = {
   url: "https://github.com/track-asia/trackasia-gl-native-distribution",
   requirement: {
     kind: "upToNextMajorVersion",
-    minimumVersion: "1.0.1"
+    minimumVersion: "1.0.5"
   },
   product_name: "TrackAsia"
 }

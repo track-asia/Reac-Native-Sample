@@ -1,12 +1,20 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
     "react-native/scripts/react_native_pods.rb",
     {paths: [process.argv[1]]},
   )', __dir__]).strip
-
+  
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
+
+$RCTMLN_Use_SPM = {
+  url: "https://github.com/track-asia/trackasia-gl-native-distribution",
+  requirement: {
+    kind: "branch",
+    branch: "1.0.5"
+  },
+  product_name: "TrackAsia"
+}
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -14,36 +22,56 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-$RCTMLN_Use_SPM = {
-  url: "https://github.com/track-asia/trackasia-gl-native-distribution",
-  requirement: {
-    kind: "upToNextMajorVersion",
-    minimumVersion: "1.0.1"
-  },
-  product_name: "TrackAsia"
-}
+# Resolve react_native_pods.rb with node to allow for hoisting
+
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+  pod $RCTMLN_Use_SPM[:product_name], :git => $RCTMLN_Use_SPM[:url], :branch => $RCTMLN_Use_SPM[:requirement][:branch]
+  pod 'DoubleConversion', :git => 'https://github.com/google/double-conversion.git'
+end
+
+INHIBIT_WARNING_BY_DEFAULT = true
+
+if INHIBIT_WARNING_BY_DEFAULT
+  ORIG_POD = method(:pod)
+
+  # Override pods so we default to disabling all warnings
+  def pod(name, *requirements)
+    options = requirements.last
+    if options.is_a?(Hash)
+      options[:inhibit_warnings] = true unless options.has_key?(:inhibit_warnings)
+    else
+      requirements.push({inhibit_warnings: true})
+    end
+    ORIG_POD[name, *requirements]
+  end
+end
 
 target 'TrackAsiaSample' do
   config = use_native_modules!
-
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
   )
 
-  target 'TrackAsiaSampleTests' do
-    inherit! :complete
-    # Pods for testing
-  end
+  # pod 'trackasia-react-native', :path => '../../', :inhibit_warnings => false
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings["ONLY_ACTIVE_ARCH"] = "NO"
+      end
+    end
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+    end
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
+    $RCTMLN.post_install(installer)
   end
 end
